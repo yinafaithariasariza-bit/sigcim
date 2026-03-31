@@ -1,0 +1,47 @@
+{% extends 'appointments/base.html' %}
+{% block title %}Patients · SIGCIM{% endblock %}
+{% block page_title %}Patients{% endblock %}
+{% block page_meta %}{{ patients.count }} registered{% endblock %}
+
+{% block content %}
+<form method="get" class="search-bar">
+  <input type="text" name="q" value="{{ search }}" placeholder="Search by name…" class="form-input">
+  <button type="submit" class="btn btn-outline">Search</button>
+</form>
+
+{% if patients %}
+<div class="card">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Age</th>
+        <th>Blood type</th>
+        <th>Insurance #</th>
+        <th>Phone</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for patient in patients %}
+      <tr>
+        <td><a href="{% url 'patient_detail' patient.pk %}">{{ patient.get_full_name }}</a></td>
+        <td style="font-family:var(--mono);font-size:0.8rem;">{{ patient.age }}</td>
+        <td style="font-family:var(--mono);font-size:0.8rem;">{{ patient.blood_type|default:"—" }}</td>
+        <td style="font-family:var(--mono);font-size:0.8rem;color:var(--muted);">{{ patient.insurance_number|default:"—" }}</td>
+        <td style="font-size:0.85rem;">{{ patient.phone }}</td>
+        <td style="text-align:right;">
+          <a href="{% url 'patient_detail' patient.pk %}" class="btn btn-ghost" style="font-size:0.75rem;">View →</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="empty-state">
+  <div class="empty-state-number">∅</div>
+  <p>No patients found</p>
+</div>
+{% endif %}
+{% endblock %}

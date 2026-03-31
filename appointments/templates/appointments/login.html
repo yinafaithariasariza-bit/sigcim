@@ -1,0 +1,40 @@
+{% extends 'appointments/base.html' %}
+
+{% block fullpage %}
+<div class="login-wrap">
+  <div class="login-panel">
+    <div class="login-brand">SIGCIM</div>
+    <div class="login-sub">Sistema de Gestión de Citas Médicas</div>
+
+    <form method="post">
+      {% csrf_token %}
+      <div style="display:flex;flex-direction:column;gap:1rem;max-width:340px;">
+        {% for field in form %}
+        <div class="form-group">
+          <label class="form-label">{{ field.label }}</label>
+          {{ field }}
+          {% if field.errors %}
+          <span class="form-error">{{ field.errors|join:", " }}</span>
+          {% endif %}
+        </div>
+        {% endfor %}
+
+        {% if form.non_field_errors %}
+        <div class="form-error" style="padding:0.6rem;background:#fdf0f0;border-left:2px solid #8b2e2e;">
+          {{ form.non_field_errors|join:", " }}
+        </div>
+        {% endif %}
+
+        <button type="submit" class="btn btn-primary" style="margin-top:0.5rem;">
+          Access system →
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <div class="login-art">
+    <div class="login-art-text">Medical<br>care,<br>organized.</div>
+    <div class="login-art-mark">SIGCIM · v1.0</div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends 'appointments/base.html' %}
+{% block title %}Cancel Appointment · SIGCIM{% endblock %}
+{% block page_title %}Cancel appointment{% endblock %}
+{% block content %}
+<div class="card" style="max-width:480px;">
+  <div class="card-header"><span class="card-title">Confirm cancellation</span></div>
+  <div class="card-body">
+    <p style="margin-bottom:1.5rem;font-size:0.9rem;line-height:1.6;">
+      You are about to cancel the appointment for
+      <strong>{{ appointment.patient.get_full_name }}</strong>
+      with Dr. <strong>{{ appointment.doctor.get_full_name }}</strong>
+      on {{ appointment.scheduled_at|date:"N j, Y" }} at {{ appointment.scheduled_at|time:"H:i" }}.
+      This action cannot be undone.
+    </p>
+    <form method="post" style="display:flex;gap:0.75rem;">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-danger">Yes, cancel it</button>
+      <a href="{% url 'appointment_detail' appointment.pk %}" class="btn btn-outline">Go back</a>
+    </form>
+  </div>
+</div>
+{% endblock %}

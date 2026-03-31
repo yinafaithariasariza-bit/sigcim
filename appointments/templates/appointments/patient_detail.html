@@ -1,0 +1,92 @@
+{% extends 'appointments/base.html' %}
+
+{% block title %}{{ patient.get_full_name }} · SIGCIM{% endblock %}
+{% block page_title %}{{ patient.get_full_name }}{% endblock %}
+{% block page_meta %}Patient record{% endblock %}
+
+{% block topbar_actions %}
+<a href="{% url 'patient_list' %}" class="btn btn-outline">← Patients</a>
+<a href="{% url 'appointment_create' %}" class="btn btn-primary">+ New appointment</a>
+{% endblock %}
+
+{% block content %}
+
+<div class="card">
+  <div class="card-header"><span class="card-title">Personal information</span></div>
+  <div class="card-body">
+    <div class="detail-grid">
+      <div class="detail-field">
+        <div class="detail-field-label">Full name</div>
+        <div class="detail-field-value">{{ patient.get_full_name }}</div>
+      </div>
+      <div class="detail-field">
+        <div class="detail-field-label">Date of birth</div>
+        <div class="detail-field-value" style="font-family:var(--mono);font-size:0.875rem;">{{ patient.date_of_birth|date:"N j, Y" }}</div>
+      </div>
+      <div class="detail-field">
+        <div class="detail-field-label">Age</div>
+        <div class="detail-field-value">{{ patient.age }} years</div>
+      </div>
+      <div class="detail-field">
+        <div class="detail-field-label">Blood type</div>
+        <div class="detail-field-value" style="font-family:var(--mono);">{{ patient.blood_type|default:"—" }}</div>
+      </div>
+      <div class="detail-field">
+        <div class="detail-field-label">Phone</div>
+        <div class="detail-field-value" style="font-family:var(--mono);font-size:0.875rem;">{{ patient.phone }}</div>
+      </div>
+      <div class="detail-field">
+        <div class="detail-field-label">Insurance #</div>
+        <div class="detail-field-value" style="font-family:var(--mono);font-size:0.875rem;">{{ patient.insurance_number|default:"—" }}</div>
+      </div>
+      {% if patient.address %}
+      <div class="detail-field" style="grid-column:1/-1;">
+        <div class="detail-field-label">Address</div>
+        <div class="detail-field-value" style="font-weight:400;">{{ patient.address }}</div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <span class="card-title">Appointment history</span>
+    <span style="font-family:var(--mono);font-size:0.65rem;color:var(--muted);">{{ appointments.count }} total</span>
+  </div>
+  <div class="card-body" style="padding:0;">
+    {% if appointments %}
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Date</th><th>Doctor</th><th>Specialty</th><th>Reason</th><th>Status</th><th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for appt in appointments %}
+        <tr>
+          <td style="font-family:var(--mono);font-size:0.78rem;white-space:nowrap;">
+            {{ appt.scheduled_at|date:"M j, Y" }}<br>
+            <span style="color:var(--muted);">{{ appt.scheduled_at|time:"H:i" }}</span>
+          </td>
+          <td>Dr. {{ appt.doctor.get_full_name }}</td>
+          <td style="color:var(--muted);font-size:0.82rem;">{{ appt.doctor.specialty }}</td>
+          <td style="font-size:0.82rem;">{{ appt.reason|truncatechars:60 }}</td>
+          <td><span class="badge badge-{{ appt.status }}">{{ appt.get_status_display }}</span></td>
+          <td style="text-align:right;">
+            <a href="{% url 'appointment_detail' appt.pk %}" class="btn btn-ghost" style="font-size:0.75rem;">View →</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state">
+      <div class="empty-state-number">∅</div>
+      <p>No appointments on record</p>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock %}

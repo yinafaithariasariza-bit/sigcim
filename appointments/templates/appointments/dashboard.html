@@ -1,0 +1,106 @@
+{% extends 'appointments/base.html' %}
+{% load static %}
+
+{% block title %}Dashboard · SIGCIM{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+{% block page_meta %}{% now "l, N j, Y" %}{% endblock %}
+
+{% block topbar_actions %}
+<a href="{% url 'appointment_create' %}" class="btn btn-primary">+ New appointment</a>
+{% endblock %}
+
+{% block content %}
+
+<div class="stats-grid">
+  <div class="stat-card accent">
+    <div class="stat-number">{{ stats.today_count }}</div>
+    <div class="stat-label">Today's appointments</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-number">{{ stats.pending }}</div>
+    <div class="stat-label">Pending</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-number">{{ stats.confirmed }}</div>
+    <div class="stat-label">Confirmed</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-number">{{ stats.total_patients }}</div>
+    <div class="stat-label">Total patients</div>
+  </div>
+</div>
+
+<div style="display:grid;grid-template-columns:1fr 320px;gap:2rem;">
+
+  <div>
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Today's schedule</span>
+        <a href="{% url 'appointment_list' %}" class="btn btn-ghost" style="font-size:0.75rem;">View all →</a>
+      </div>
+      <div class="card-body" style="padding:0;">
+        {% if upcoming %}
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Time</th>
+              <th>Patient</th>
+              <th>Doctor</th>
+              <th>Specialty</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for appt in upcoming %}
+            <tr>
+              <td style="font-family:var(--mono);font-size:0.8rem;white-space:nowrap;">
+                {{ appt.scheduled_at|time:"H:i" }}
+              </td>
+              <td><a href="{% url 'appointment_detail' appt.pk %}">{{ appt.patient.get_full_name }}</a></td>
+              <td>Dr. {{ appt.doctor.get_full_name }}</td>
+              <td style="color:var(--muted);font-size:0.8rem;">{{ appt.doctor.specialty }}</td>
+              <td><span class="badge badge-{{ appt.status }}">{{ appt.get_status_display }}</span></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% else %}
+        <div class="empty-state">
+          <div class="empty-state-number">0</div>
+          <p>No appointments scheduled for today</p>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Recent activity</span>
+      </div>
+      <div class="card-body">
+        <ul class="timeline">
+          {% for appt in recent %}
+          <li class="timeline-item">
+            <div class="timeline-dot"></div>
+            <div class="timeline-body">
+              <div class="timeline-time">{{ appt.created_at|timesince }} ago</div>
+              <div class="timeline-title">
+                <a href="{% url 'appointment_detail' appt.pk %}" style="color:var(--ink);text-decoration:none;">
+                  {{ appt.patient.get_full_name }}
+                </a>
+              </div>
+              <span class="badge badge-{{ appt.status }}">{{ appt.get_status_display }}</span>
+            </div>
+          </li>
+          {% empty %}
+          <li style="color:var(--muted);font-size:0.8rem;">No recent activity.</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
